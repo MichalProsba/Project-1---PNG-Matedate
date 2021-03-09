@@ -6,7 +6,7 @@ CHUNK_LENGTH = 4
 CHUNK_TYPE = 4
 #Constant symbol CRC
 CHUNK_CRC = 4
-aaaaaaaaaaaaaaaaaaa\''
+
 class ImagePng:
     #Const magic number
     magic_number=b'\x89PNG\r\n\x1a\n'
