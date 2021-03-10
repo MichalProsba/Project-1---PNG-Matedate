@@ -1,8 +1,14 @@
 from ImagePng import ImagePng
-test = ImagePng("dice.png")
-print(test.chunk_ihdr)
+test = ImagePng("mario.png")
+#print(test.chunk_ihdr)
+#test.show_picture()
 #print(test.chunk_plte)
 #print(test.chunk_iend)
+#print(test.chunk_time)
+#print(test.chunk_itxt)
+#print(test.chunk_text)
+
+
 
 """
 #j=0

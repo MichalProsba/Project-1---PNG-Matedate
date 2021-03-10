@@ -1,4 +1,5 @@
-from Chunks import Chunk, IHDR, PLTE, IDAT, IEND
+from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt
+from PIL import Image, PngImagePlugin
 
 #Constant length of chunk
 CHUNK_LENGTH = 4
@@ -13,13 +14,11 @@ class ImagePng:
     #Constructor
     def __init__(self, file):
         #Open file
+        self.file_name = file
         self.file = open(file, "rb")
 
         self.chunks_idat=[]
         self.chunks_others=[]
-        self.chunk_ihdr=0
-        self.chunk_plte=0
-        self.chunk_iend=0
 
         #If file is readable
         if self.file.readable():
@@ -42,7 +41,7 @@ class ImagePng:
             #byte_sum = sum(chunk_length_list)
             #print(byte_sum)
             chunk_type=self.file.read(CHUNK_TYPE)
-            #print(chunk_type)
+            print(chunk_type)
             chunk_data=self.file.read(byte_sum)
             #print(chunk_data)
             chunk_crc=self.file.read(CHUNK_CRC)
@@ -55,21 +54,16 @@ class ImagePng:
             elif chunk_type == b'IDAT':
                 self.chunks_idat.append(IDAT(chunk_length_byte, chunk_type, chunk_data, chunk_crc))
             elif chunk_type == b'IEND':
-                self.chunk_iend = IEND(chunk_length_byte, chunk_type, chunk_data, chunk_crc)     
+                self.chunk_iend = IEND(chunk_length_byte, chunk_type, chunk_data, chunk_crc)    
+            elif chunk_type == b'tIME':
+                self.chunk_time = tIME(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
+            elif chunk_type == b'iTXt':
+                self.chunk_itxt = iTXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
+            elif chunk_type == b'tEXt':
+                self.chunk_text = tEXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
 
-
-
-
-
-
-        #self.ihdr_data = int.from_bytes(self.file.read(3), byteorder="big", signed=False)
-        #print(self.ihdr_data)
-      
-
-   
-    def __del__(self):
-        print("Closing file...")
-        self.file.close()
-        
+    def show_picture(self):
+        img = Image.open(self.file_name)
+        img.show()

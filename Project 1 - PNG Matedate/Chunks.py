@@ -1,7 +1,7 @@
 #Start bit to 
 #End bit to convert
 def convert_byte(data, start, end):
-    return int.from_bytes(data[start-1:end],byteorder = "big", signed=False)
+    return int.from_bytes(data[start:end+1],byteorder = "big", signed=False)
 
 class Chunk:
     def __init__(self, length, chunk_type, data, crc):
@@ -20,8 +20,8 @@ class Chunk:
 class IHDR(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
-        self.width = convert_byte(self.data, 1, 4)
-        self.height = convert_byte(self.data, 5, 8)
+        self.width = convert_byte(self.data, 0, 3)
+        self.height = convert_byte(self.data, 4, 7)
         self.bit_depth = self.data[8]
         self.color_type = self.data[9]
         self.compression_method = self.data[10]
@@ -33,9 +33,25 @@ class IHDR(Chunk):
 class PLTE(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
+        #Paleta kolorow
+        self.colors = []
+        i = 0
+        while i < int(convert_byte(self.length, 0, 3)):    
+            R = self.data[i]
+            G = self.data[i + 1]
+            B = self.data[i + 2]
+            self.colors.append([R, G, B])
+            i+=3
     def __str__(self):
-        return super().__str__()
-
+        i = 0
+        plte_info = ""
+        while i < int(convert_byte(self.length, 0, 3)/3):
+            if not (i % 8):
+                plte_info += "\n"
+            plte_info += str(self.colors[i])
+            i+=1
+        return "================================================================================\n" + super().__str__() + str(plte_info) + "\n================================================================================\n"
+       
 class IDAT(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -47,5 +63,60 @@ class IEND(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
     def __str__(self):
-        return super().__str__()
+        return "================================================================================\n" + super().__str__() + "================================================================================\n"
 
+
+class tIME(Chunk):
+    def __init__(self, length, chunk_type, data, crc):
+        super().__init__(length, chunk_type, data, crc)
+        self.year = convert_byte(self.data, 0, 1)
+        self.month = self.data[2]
+        self.day = self.data[3]
+        self.hour = self.data[4]
+        self.minute = self.data[5]
+        self.second = self.data[6]
+    def __str__(self):
+        return "================================================================================\n" + super().__str__() + "Year: {0}\nMonth: {1}\nDay: {2}\nHour: {3}\nMinute: {4}\nSecond: {5}\n".format(self.year, self.month, self.day, self.hour, self.minute, self.second) + "================================================================================"
+
+
+
+class iTXt(Chunk):
+    def __init__(self, length, chunk_type, data, crc):
+        super().__init__(length, chunk_type, data, crc)
+        all_data = self.data
+        #all_data = b'Comment\x00\x07\x08german\x00slowoklucz\x00Created with GIMP'
+        #print(all_data)
+        index = all_data.index(b'\x00')
+        #print(str(self.data))
+        self.keyword = all_data[:index].decode('utf-8')
+        #print(self.keyword)
+        self.compression_flag = all_data[index+1]
+        #print(self.compression_flag)
+        self.itxt_compression_method = all_data[index+2]
+        #print(self.itxt_compression_method)
+        all_data = all_data[index+3:]
+        index = all_data.index(b'\x00')
+        self.language_tag = all_data[:index].decode('utf-8')
+        #print(self.language_tag)
+        all_data = all_data[index+1:]
+        index = all_data.index(b'\x00')
+        self.translated_keyword = all_data[:index].decode('utf-8')
+        #print(self.translated_keyword)
+        self.text = all_data[index+1:].decode('utf-8')
+        #print(self.text)
+    def __str__(self):
+        return "================================================================================\n" + super().__str__() + "Keyword: {0}\nCompression flag: {1}\nCompression method: {2}\nLanguage tag: {3}\nTranslated keyword: {4}\nText: {5}\n".format(self.keyword, self.compression_flag, self.itxt_compression_method, self.language_tag, self.translated_keyword, self.text) + "================================================================================"
+
+
+class tEXt(Chunk):
+    def __init__(self, length, chunk_type, data, crc):
+        super().__init__(length, chunk_type, data, crc)
+        all_data = self.data
+        index = all_data.index(b'\x00')
+        #print(str(self.data))
+        self.keyword = all_data[:index].decode('utf-8')
+        #print(self.keyword)
+        self.text_string = all_data[index+1:].decode('utf-8')
+        #print(self.text_string)
+    def __str__(self):
+        return "================================================================================\n" + super().__str__() + "Keyword: {0}\nText string: {1}\n".format(self.keyword, self.text_string) + "================================================================================"
