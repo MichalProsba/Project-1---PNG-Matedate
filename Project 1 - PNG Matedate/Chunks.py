@@ -120,3 +120,9 @@ class tEXt(Chunk):
         #print(self.text_string)
     def __str__(self):
         return "================================================================================\n" + super().__str__() + "Keyword: {0}\nText string: {1}\n".format(self.keyword, self.text_string) + "================================================================================"
+
+class eXIf(Chunk):
+    def __init__(self, length, chunk_type, data, crc):
+        super().__init__(length, chunk_type, data, crc)
+    def __str__(self):
+        return "================================================================================\n" + super().__str__() + "================================================================================\n"

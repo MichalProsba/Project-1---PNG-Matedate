@@ -1,17 +1,18 @@
 from ImagePng import ImagePng
-img = ImagePng("dead_space.png")
+img = ImagePng("exif.png")
 #print(img.chunk_ihdr)
 #img.show_picture()
 #print(img.chunk_plte)
 #print(img.chunk_iend)
 #print(img.chunk_time)
-print(img.chunk_itxt)
-print(img.chunk_text)
+#print(img.chunk_itxt)
+#print(img.chunk_text)
+print(img.chunk_exif)
 
 #img.show_picture_color()
 #img.show_magnitude_spectrum()
 #img.show_phase_spectrum()
-img.show_spectrum()
+#img.show_spectrum()
 
 
 """

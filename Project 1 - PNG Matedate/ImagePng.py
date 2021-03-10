@@ -1,4 +1,4 @@
-from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt
+from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt, eXIf
 import cv2
 import numpy as np
 from PIL import Image, PngImagePlugin
@@ -44,7 +44,7 @@ class ImagePng:
             #byte_sum = sum(chunk_length_list)
             #print(byte_sum)
             chunk_type=self.file.read(CHUNK_TYPE)
-            print(chunk_type)
+            #print(chunk_type)
             chunk_data=self.file.read(byte_sum)
             #print(chunk_data)
             chunk_crc=self.file.read(CHUNK_CRC)
@@ -64,6 +64,8 @@ class ImagePng:
                 self.chunk_itxt = iTXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
             elif chunk_type == b'tEXt':
                 self.chunk_text = tEXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
+            elif chunk_type == b'eXIf':
+                self.chunk_exif = eXIf(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
     def show_picture_color(self):
