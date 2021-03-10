@@ -1,4 +1,6 @@
 from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt
+import cv2
+import numpy as np
 from PIL import Image, PngImagePlugin
 
 #Constant length of chunk
@@ -16,7 +18,8 @@ class ImagePng:
         #Open file
         self.file_name = file
         self.file = open(file, "rb")
-
+        self.img_color = cv2.imread(file, cv2.IMREAD_COLOR)
+        self.img_gray = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
         self.chunks_idat=[]
         self.chunks_others=[]
 
@@ -63,7 +66,19 @@ class ImagePng:
                 self.chunk_text = tEXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
-
-    def show_picture(self):
-        img = Image.open(self.file_name)
-        img.show()
+    def show_picture_color(self):
+        cv2.imshow("Image color", self.img_color)
+    def show_picture_gray(self):
+        cv2.imshow("Image gray", self.img_gray)
+    def show_spectrum(self):
+        f = np.fft.fft2(self.img_gray)
+        fshift = np.fft.fftshift(f)
+        magnitude_spectrum = 20*np.log(np.sqrt(np.real(fshift[::]) ** 2 + np.imag(fshift[::]) ** 2))
+        phase_spectrum = np.arctan(np.imag(fshift[::])/np.real(fshift[::]))
+        magnitude_spectrum = np.asarray(magnitude_spectrum, dtype=np.uint8)
+        phase_spectrum = np.asarray(phase_spectrum, dtype=np.uint8)
+        cv2.imshow("Image Furrier Magnitude", magnitude_spectrum)
+        cv2.imshow("Image Furrier Angle", phase_spectrum)
+        cv2.imshow("Image", self.img_gray)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()

@@ -1,13 +1,17 @@
 from ImagePng import ImagePng
-test = ImagePng("mario.png")
-#print(test.chunk_ihdr)
-#test.show_picture()
-#print(test.chunk_plte)
-#print(test.chunk_iend)
-#print(test.chunk_time)
-#print(test.chunk_itxt)
-#print(test.chunk_text)
+img = ImagePng("dead_space.png")
+#print(img.chunk_ihdr)
+#img.show_picture()
+#print(img.chunk_plte)
+#print(img.chunk_iend)
+#print(img.chunk_time)
+print(img.chunk_itxt)
+print(img.chunk_text)
 
+#img.show_picture_color()
+#img.show_magnitude_spectrum()
+#img.show_phase_spectrum()
+img.show_spectrum()
 
 
 """
