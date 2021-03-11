@@ -1,13 +1,19 @@
 from ImagePng import ImagePng
-img = ImagePng("exif.png")
+nazwa_pliku = input("Podaj nazwę pliku:")
+img = ImagePng(nazwa_pliku)
 #print(img.chunk_ihdr)
-#img.show_picture()
 #print(img.chunk_plte)
 #print(img.chunk_iend)
 #print(img.chunk_time)
 #print(img.chunk_itxt)
 #print(img.chunk_text)
-print(img.chunk_exif)
+#print(img.chunk_chrm)
+
+#try:
+#    print(img.chunk_plte)
+#except AttributeError:
+#    print("Plik {0} nie ma chunka o nazwie PLTE".format(nazwa_pliku))
+
 
 #img.show_picture_color()
 #img.show_magnitude_spectrum()
