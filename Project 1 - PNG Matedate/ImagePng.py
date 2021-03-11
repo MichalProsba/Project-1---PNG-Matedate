@@ -1,4 +1,4 @@
-from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt, cHRM
+from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt, cHRM, sRGB, pHYs, eXIf
 import cv2
 import numpy as np
 from PIL import Image, PngImagePlugin
@@ -72,8 +72,12 @@ class ImagePng:
                 self.chunk_text = tEXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
             elif chunk_type == b'cHRM':
                 self.chunk_chrm = cHRM(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
-            #elif chunk_type == b'eXIf':
-            #    self.chunk_exif = eXIf(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
+            elif chunk_type == b'sRGB':
+                self.chunk_srgb = sRGB(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
+            elif chunk_type == b'pHYs':
+                self.chunk_phys = pHYs(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
+            elif chunk_type == b'eXIf':
+                self.chunk_exif = eXIf(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
     def show_picture_color(self):

@@ -1,3 +1,7 @@
+from lxml import etree
+import io
+import re
+
 #Start bit to 
 #End bit to convert
 def convert_byte(data, start, end):
@@ -104,6 +108,14 @@ class iTXt(Chunk):
         #print(self.translated_keyword)
         self.text = all_data[index+1:].decode('utf-8')
         #print(self.text)
+        if re.search("XML", self.keyword):
+            with io.open("tmp.xml", "w", encoding="utf-8") as tmp:
+                tmp.write(self.text)
+                #tmp= open("tmp.xml","w")
+                #tmp.write(self.text)
+                tmp.close()
+            tree = etree.parse("tmp.xml")
+            self.text = etree.tostring(tree, encoding="unicode", pretty_print=True)
     def __str__(self):
         return "================================================================================\n" + super().__str__() + "Keyword: {0}\nCompression flag: {1}\nCompression method: {2}\nLanguage tag: {3}\nTranslated keyword: {4}\nText: {5}\n".format(self.keyword, self.compression_flag, self.itxt_compression_method, self.language_tag, self.translated_keyword, self.text) + "================================================================================"
 
@@ -136,9 +148,26 @@ class cHRM(Chunk):
         return "================================================================================\n" + super().__str__() + "White point x: {0}\nWhite point y: {1}\nRed x: {2}\nRed y: {3}\nGreen x: {4}\nGreen y: {5}\nBlue x: {6}\nBlue y: {7}\n".format(self.white_point_x, self.white_point_y, self.red_x, self.red_y, self.green_x, self.green_y, self.blue_x, self.blue_y) + "================================================================================"
 
 
+class sRGB(Chunk):
+    def __init__(self, length, chunk_type, data, crc):
+        super().__init__(length, chunk_type, data, crc)
+        self.rendering_intent = self.data.decode('utf-8')
+    def __str__(self):
+        return "================================================================================\n" + super().__str__() + "Rendering data: {0}\n".format(self.rendering_intent) + "================================================================================\n"
 
-#class eXIf(Chunk):
-#    def __init__(self, length, chunk_type, data, crc):
-#        super().__init__(length, chunk_type, data, crc)
-#    def __str__(self):
-#        return "================================================================================\n" + super().__str__() + "================================================================================\n"
+
+class pHYs(Chunk):
+    def __init__(self, length, chunk_type, data, crc):
+        super().__init__(length, chunk_type, data, crc)
+        self.pixel_per_unit_x = convert_byte(self.data, 0, 3)
+        self.pixel_per_unit_y = convert_byte(self.data, 4, 7)
+        self.unit_specifier = self.data[8]
+    def __str__(self):
+        return "================================================================================\n" + super().__str__() + "Pixel per unit, X axis: {0}\nPixel per unit, Y axis: {1}\nUnit specifier: {2}\n".format(self.pixel_per_unit_x, self.pixel_per_unit_y, self.unit_specifier) + "================================================================================\n"
+
+
+class eXIf(Chunk):
+    def __init__(self, length, chunk_type, data, crc):
+        super().__init__(length, chunk_type, data, crc)
+    def __str__(self):
+        return "================================================================================\n" + super().__str__() +  "================================================================================\n"

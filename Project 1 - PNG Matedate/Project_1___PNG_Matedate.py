@@ -1,4 +1,6 @@
 from ImagePng import ImagePng
+
+
 nazwa_pliku = input("Podaj nazwę pliku:")
 img = ImagePng(nazwa_pliku)
 #print(img.chunk_ihdr)
@@ -8,6 +10,13 @@ img = ImagePng(nazwa_pliku)
 #print(img.chunk_itxt)
 #print(img.chunk_text)
 #print(img.chunk_chrm)
+#print(img.chunk_srgb)
+#print(img.chunk_phys)
+#print(img.chunk_exif)
+
+
+
+
 
 #try:
 #    print(img.chunk_plte)
