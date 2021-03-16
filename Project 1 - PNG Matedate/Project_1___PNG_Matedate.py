@@ -1,8 +1,9 @@
 from ImagePng import ImagePng
 
-
-nazwa_pliku = input("Podaj nazwę pliku:")
-img = ImagePng(nazwa_pliku)
+while True:
+    nazwa_pliku = input("Podaj nazwę pliku:")
+    img = ImagePng(nazwa_pliku)
+    print(img.chunk_sPLT)
 #print(img.chunk_ihdr)
 #print(img.chunk_plte)
 #print(img.chunk_iend)

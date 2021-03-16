@@ -171,3 +171,43 @@ class eXIf(Chunk):
         super().__init__(length, chunk_type, data, crc)
     def __str__(self):
         return "================================================================================\n" + super().__str__() +  "================================================================================\n"
+
+
+class sPLT(Chunk):
+    def __init__(self, length, chunk_type, data, crc):
+        super().__init__(length, chunk_type, data, crc)
+        all_data = self.data
+        #all_data = b'Comment\x00\x07\x08german\x00slowoklucz\x00Created with GIMP'
+        #print(all_data)
+        index = all_data.index(b'\x00')
+        #print(index)
+        #print(str(self.data))
+        self.palette_name = all_data[:index]#.decode('utf-8')
+        all_data = all_data[index+1:]
+        self.sample_depth = convert_byte(all_data, 0, 0)
+        #print(self.sample_depth)
+        if self.sample_depth == 16:
+            self.green = convert_byte(all_data, 1, 2)
+            self.red = convert_byte(all_data, 3, 4)
+            self.blue = convert_byte(all_data, 5, 6)
+            self.alpha = convert_byte(all_data, 7, 8)
+            index = 9
+        else:
+            self.green = convert_byte(all_data, 1, 1)
+            self.red = convert_byte(all_data, 2, 2)
+            self.blue = convert_byte(all_data, 3, 3)
+            self.alpha = convert_byte(all_data, 4, 4)
+            index = 5
+        #print(index)
+        all_data = all_data[index:]
+        print(len(all_data))
+        self.frequency = []
+        f = 0
+        while f < len(all_data)/2:
+            self.frequency.append(convert_byte(all_data, 2*f, 2*f+1))
+            f+=1
+    def __str__(self):
+        #return "================================================================================\n" + super().__str__() + "Palette name: {0}\nSample_depth: {1}\nGreen: {2}\nRed: {3}\nBlue: {4}\nAplha: {5}\nFrequency: {6}\n".format(self.palette_name, self.sample_depth, self.green, self.red, self.blue, self.alpha, self.frequency) + "================================================================================\n"
+        return "================================================================================\n" + "Palette name: {0}\nSample_depth: {1}\nGreen: {2}\nRed: {3}\nBlue: {4}\nAplha: {5}\nFrequency: {6}\n".format(self.palette_name, self.sample_depth, self.green, self.red, self.blue, self.alpha, self.frequency) + "================================================================================\n"
+
+

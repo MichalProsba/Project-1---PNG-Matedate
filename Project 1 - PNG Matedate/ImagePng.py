@@ -1,4 +1,4 @@
-from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt, cHRM, sRGB, pHYs, eXIf
+from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt, cHRM, sRGB, pHYs, eXIf, sPLT
 import cv2
 import numpy as np
 from PIL import Image, PngImagePlugin
@@ -33,7 +33,7 @@ class ImagePng:
         if self.file.readable():
             #If magic number is right
             if ImagePng.magic_number == self.file.read1(8):
-                print("Poprawnie wczytano magiczny numer")
+                #print("Poprawnie wczytano magiczny numer")
                 self.magic_number = ImagePng.magic_number
             else:
                 print("Niepoprawnie wczytano magiczny numer")
@@ -43,13 +43,15 @@ class ImagePng:
         while chunk_type != b'IEND':
             chunk_length_byte = self.file.read(CHUNK_LENGTH)
             #print(chunk_length_byte)
-            chunk_length_list = list(chunk_length_byte)
+            #chunk_length_list = list(chunk_length_byte)
             #print(chunk_length_list)
             #int.from_bytes(b'\xfc\x00', byteorder='big', signed=True)
             byte_sum = int.from_bytes(chunk_length_byte,byteorder = "big", signed=False)
             #byte_sum = sum(chunk_length_list)
             #print(byte_sum)
             chunk_type=self.file.read(CHUNK_TYPE)
+            if chunk_type == b'':
+                break
             print(chunk_type)
             chunk_data=self.file.read(byte_sum)
             #print(chunk_data)
@@ -78,6 +80,8 @@ class ImagePng:
                 self.chunk_phys = pHYs(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
             elif chunk_type == b'eXIf':
                 self.chunk_exif = eXIf(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
+            elif chunk_type == b'sPLT':
+                self.chunk_splt = sPLT(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
     def show_picture_color(self):
