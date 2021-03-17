@@ -2,7 +2,7 @@ from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt, cHRM, sRGB, 
 import cv2
 import numpy as np
 from PIL import Image, PngImagePlugin
-#import PIL.Image
+import PIL.Image
 
 #Ilość bitów przeznaczona na informacje o długości w chunku
 CHUNK_LENGTH = 4
@@ -35,9 +35,9 @@ def create_png():
 class ImagePng:
     def __init__(self, file):
         self.file_name = file
-        self.file = open(file, "rb")
-        self.img_color = cv2.imread(file, cv2.IMREAD_COLOR)
-        self.img_gray = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+        self.file = open(self.file_name, "rb")
+        self.img_color = cv2.imread(self.file_name, cv2.IMREAD_COLOR)
+        self.img_gray = cv2.imread(self.file_name, cv2.IMREAD_GRAYSCALE)
         self.chunks_idat=[]
         self.chunks_typical=[]
         self.chunks_others=[]
