@@ -52,7 +52,7 @@ class ImagePng:
             chunk_type=self.file.read(CHUNK_TYPE)
             if chunk_type == b'':
                 break
-            print(chunk_type)
+            #print(chunk_type)
             chunk_data=self.file.read(byte_sum)
             #print(chunk_data)
             chunk_crc=self.file.read(CHUNK_CRC)
@@ -81,6 +81,7 @@ class ImagePng:
             elif chunk_type == b'eXIf':
                 self.chunk_exif = eXIf(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
             elif chunk_type == b'sPLT':
+                #print("got it!")
                 self.chunk_splt = sPLT(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
@@ -100,3 +101,4 @@ class ImagePng:
         cv2.imshow("Image", self.img_gray)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+    

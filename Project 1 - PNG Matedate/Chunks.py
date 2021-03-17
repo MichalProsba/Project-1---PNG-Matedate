@@ -182,7 +182,7 @@ class sPLT(Chunk):
         index = all_data.index(b'\x00')
         #print(index)
         #print(str(self.data))
-        self.palette_name = all_data[:index]#.decode('utf-8')
+        self.palette_name = all_data[:index].decode('utf-8')
         all_data = all_data[index+1:]
         self.sample_depth = convert_byte(all_data, 0, 0)
         #print(self.sample_depth)
@@ -200,7 +200,7 @@ class sPLT(Chunk):
             index = 5
         #print(index)
         all_data = all_data[index:]
-        print(len(all_data))
+        #print(len(all_data))
         self.frequency = []
         f = 0
         while f < len(all_data)/2:
