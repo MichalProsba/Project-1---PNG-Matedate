@@ -1,88 +1,90 @@
-from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt, cHRM, sRGB, pHYs, eXIf, sPLT
+from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt, cHRM, sRGB, pHYs, sPLT
 import cv2
 import numpy as np
 from PIL import Image, PngImagePlugin
 #import PIL.Image
 
-#Constant length of chunk
+#Ilość bitów przeznaczona na informacje o długości w chunku
 CHUNK_LENGTH = 4
-#Constant typ of chunk
+#Ilość bitów przeznaczona na informacje o typie chunku w chunku
 CHUNK_TYPE = 4
-#Constant symbol CRC
+#Ilość bitów przeznaczona na informacje o sumie kontrolnej w chunku
 CHUNK_CRC = 4
 
+#Funkcja create_png - pozwala na tworzenie testowego pliku zawierającego chunk sPLT
+def create_png():
+        tmp2 = open('tmp2.png', 'wb')
+        data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x08\x90\x00\x00\x0bh\x08\x06\x00\x00\x00\xa6C\xccs\x00\x00\x00\rsPLTha\x00\x08\x30\x10\x20\x02\x06\x00\x06\x00\x00\x00\x00\x00IEND\xaeB`\x82'
+        tmp2.write(data)
+        tmp2.close()
+
+
+#Klasa ImagePng
+#Atrybuty:
+# file_name - nazwa pliku png
+# file - uchwyt do pliku png
+# img_color - obiekt przechowujący obraz w kolorze
+# img_gray - obiekt przechowujący obraz w odcieniach szarości
+# chunks_idat - lista zawierająca chunki idat
+# chunks_other - lista zawierająca pozostałe, które nie są obligatoryjne
+#Metody:
+# __init__ - konstruktor parametryczny do którego wysyłamy ścieżkę do pliku
+# show_picture_color - wyświetla obraz w kolorze
+# show_picture_gray - wyświetla obraz w odcieniach szarości
+# show_spectrum - wyświetla transformate Fouriera obrazu 
 class ImagePng:
-    #Const magic number
-    magic_number=b'\x89PNG\r\n\x1a\n'
-    #Constructor
     def __init__(self, file):
-        #Open file
         self.file_name = file
         self.file = open(file, "rb")
         self.img_color = cv2.imread(file, cv2.IMREAD_COLOR)
         self.img_gray = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
         self.chunks_idat=[]
+        self.chunks_typical=[]
         self.chunks_others=[]
 
-        ####################
-        #imag = PIL.Image.open("exif.png")
-        #print(imag._getexif())
-        ####################
-
-        #If file is readable
         if self.file.readable():
-            #If magic number is right
-            if ImagePng.magic_number == self.file.read1(8):
-                #print("Poprawnie wczytano magiczny numer")
-                self.magic_number = ImagePng.magic_number
+            if b'\x89PNG\r\n\x1a\n' == self.file.read1(8):
+                self.magic_number = b'\x89PNG\r\n\x1a\n'
             else:
                 print("Niepoprawnie wczytano magiczny numer")
-        
-        chunk_type = b'noname'
+        chunk_type = "noname"
         j=0
-        while chunk_type != b'IEND':
+        while chunk_type != "IEND":
             chunk_length_byte = self.file.read(CHUNK_LENGTH)
-            #print(chunk_length_byte)
-            #chunk_length_list = list(chunk_length_byte)
-            #print(chunk_length_list)
-            #int.from_bytes(b'\xfc\x00', byteorder='big', signed=True)
             byte_sum = int.from_bytes(chunk_length_byte,byteorder = "big", signed=False)
-            #byte_sum = sum(chunk_length_list)
-            #print(byte_sum)
-            chunk_type=self.file.read(CHUNK_TYPE)
-            if chunk_type == b'':
-                break
-            #print(chunk_type)
+            chunk_type=self.file.read(CHUNK_TYPE).decode('utf-8')
             chunk_data=self.file.read(byte_sum)
-            #print(chunk_data)
             chunk_crc=self.file.read(CHUNK_CRC)
-            #print(chunk_crc)
-            #x = input()
-            if chunk_type == b'IHDR':
+            if chunk_type == "IHDR":
                 self.chunk_ihdr = IHDR(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
-            elif chunk_type == b'PLTE':
-                self.chunk_plte = PLTE(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
-            elif chunk_type == b'IDAT':
+            elif chunk_type == "PLTE":
+                #self.chunk_plte = PLTE(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
+                self.chunks_typical.append(PLTE(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
+            elif chunk_type == "IDAT":
                 self.chunks_idat.append(IDAT(chunk_length_byte, chunk_type, chunk_data, chunk_crc))
-            elif chunk_type == b'IEND':
+            elif chunk_type == "IEND":
                 self.chunk_iend = IEND(chunk_length_byte, chunk_type, chunk_data, chunk_crc)    
-            elif chunk_type == b'tIME':
-                self.chunk_time = tIME(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
-            elif chunk_type == b'iTXt':
-                self.chunk_itxt = iTXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
-            elif chunk_type == b'tEXt':
-                self.chunk_text = tEXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
-            elif chunk_type == b'cHRM':
-                self.chunk_chrm = cHRM(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
-            elif chunk_type == b'sRGB':
-                self.chunk_srgb = sRGB(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
-            elif chunk_type == b'pHYs':
-                self.chunk_phys = pHYs(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
-            elif chunk_type == b'eXIf':
-                self.chunk_exif = eXIf(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
-            elif chunk_type == b'sPLT':
-                #print("got it!")
-                self.chunk_splt = sPLT(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
+            elif chunk_type == "tIME":
+                #self.chunk_time = tIME(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
+                self.chunks_typical.append(tIME(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
+            elif chunk_type == "iTXt":
+                #self.chunk_itxt = iTXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
+                self.chunks_typical.append(iTXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc))
+            elif chunk_type == "tEXt":
+                #self.chunk_text = tEXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
+                self.chunks_typical.append(tEXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
+            elif chunk_type == "cHRM":
+                #self.chunk_chrm = cHRM(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
+                self.chunks_typical.append(cHRM(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
+            elif chunk_type == "sRGB":
+                #self.chunk_srgb = sRGB(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
+                self.chunks_typical.append(sRGB(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
+            elif chunk_type == "pHYs":
+                #self.chunk_phys = pHYs(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
+                self.chunks_typical.append(pHYs(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
+            elif chunk_type == "sPLT":
+                #self.chunk_splt = sPLT(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
+                self.chunks_typical.append(sPLT(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
     def show_picture_color(self):

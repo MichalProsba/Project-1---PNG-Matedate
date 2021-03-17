@@ -1,17 +1,58 @@
 from ImagePng import ImagePng
+import os
 
-def create_png():
-        tmp2 = open('tmp2.png', 'wb')
-        data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x08\x90\x00\x00\x0bh\x08\x06\x00\x00\x00\xa6C\xccs\x00\x00\x00\rsPLTha\x00\x08\x30\x10\x20\x02\x06\x00\x06\x00\x00\x00\x00\x00IEND\xaeB`\x82'
-        tmp2.write(data)
-        tmp2.close()
+#Funkcja cls - pozwala na wyczyszczenie interpretera na każdym systemie operacyjnym
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
 
-create_png()
+
+line = "================================================================="
+
 
 while True:
-    nazwa_pliku = input("Podaj nazwę pliku:")
-    img = ImagePng(nazwa_pliku)
-    print(img.chunk_splt)
+    j = 1
+    print(line)
+    file_name = input("Podaj nazwę pliku:")
+    img = ImagePng(file_name)
+    print(line)
+    print("Wybierz Chunka, którego informacje chcesz wyświetlić:")
+    print(line)
+    print("1. IHDR")
+    j += 1
+    print(line)
+    
+    for i in img.chunks_typical:
+        print(str(j) + ". " + str(i.chunk_type))    
+        print(line)
+        j += 1
+    print(str(j) + ". IEND")
+    j+=1
+    print(str(j) + ". Zakończ program")
+    j+=1
+    number = -1
+    while number != j:
+        print(line)
+        number = int(input("Wybierz opcję:"))
+        cls()
+        if number >= 1 and number <= j:
+            if number == 1:
+                print(img.chunk_ihdr)
+            elif number == j:
+                print(img.chunk_iend)
+            elif number != j:
+                print(img.chunks_typical[number-1])
+        else:
+            print("Błąd: Nie ma takiego chunka! Spróbuj ponownie.")
+    
+        
+
+
+
+
+
+    
+
+#print(img.chunk_splt)
 #print(img.chunk_ihdr)
 #print(img.chunk_plte)
 #print(img.chunk_iend)
