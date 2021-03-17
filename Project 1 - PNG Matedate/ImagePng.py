@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 from PIL import Image, PngImagePlugin
 import PIL.Image
+import sys
 
 #Ilość bitów przeznaczona na informacje o długości w chunku
 CHUNK_LENGTH = 4
