@@ -17,8 +17,8 @@ def convert_byte(data, start, end):
 # crc - 4 bajtowa suma kontrolna chunk_type oraz data zawiera długość atrybutu chunk_type oraz data w bajtach
 #
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka w określony przez nas sposób)
 class Chunk:
     def __init__(self, length, chunk_type, data, crc):
         self.length = length
@@ -39,8 +39,8 @@ class Chunk:
 # filter_method - 1 bajt zawierający informacje o metodzie filtrowania
 # interlace_method - 1 bajt zawierający informacje oo metodzie z przeplotem
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka IHDR w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka IHDR w określony przez nas sposób)
 class IHDR(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -60,8 +60,8 @@ class IHDR(Chunk):
 # G - 1 bajt zawierające informacj o kolorze zielony (0 - czarny / 255 - zielony)
 # B - 1 bajt zawierające informacj o kolorze niebieskim (0 - zielony / 255 - zielony)
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka PLTE w określony przez nas sposób)  
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka PLTE w określony przez nas sposób)  
 class PLTE(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -86,8 +86,8 @@ class PLTE(Chunk):
 #Klasa IDAT - Chunk IDAT jest chunkiem obowiązkowym i zawiera obraz
 #Atrybuty:
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka IDAT w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka IDAT w określony przez nas sposób)
 class IDAT(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -97,8 +97,8 @@ class IDAT(Chunk):
 #Klasa IEND - Chunk IEND jest chunkiem obowiązkowym i musi pojawić się jako ostatni i nie zawiera informacji
 #Atrybuty:
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka IEND w określony przez nas sposób)  
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka IEND w określony przez nas sposób)  
 class IEND(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -115,8 +115,8 @@ class IEND(Chunk):
 # second - sekund zapisana na 1 bajcie
 #
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka tIME w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka tIME w określony przez nas sposób)
 class tIME(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -139,8 +139,8 @@ class tIME(Chunk):
 # text - 0 lub więcej bajtów zawierających informację tekstową
 #
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka iTXt w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka iTXt w określony przez nas sposób)
 class iTXt(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -171,8 +171,8 @@ class iTXt(Chunk):
 # text_string - 0 lub więcej bajtów zawierających informację tekstową
 #
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka tEXt w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka tEXt w określony przez nas sposób)
 class tEXt(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -194,8 +194,8 @@ class tEXt(Chunk):
 # blue_x -  4 bajty zawierające informacje o współrzędnej x koloru niebieskiego
 # blue_y - 4 bajty zawierające informacje o współrzędnej y koloru niebieskiego
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka cHRM w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka cHRM w określony przez nas sposób)
 class cHRM(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -215,8 +215,8 @@ class cHRM(Chunk):
 # rendering_intent - 1 bajt określający sposób renderowania za pomocą którego obraz powinien być wyświetlany
 #
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka sRGB w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka sRGB w określony przez nas sposób)
 class sRGB(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -231,8 +231,8 @@ class sRGB(Chunk):
 # unit_specifier - 1 bajt określający jednostkę (0 - nie znana jednostka, 1 - metry)
 #
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka pHYs w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka pHYs w określony przez nas sposób)
 class pHYs(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -253,8 +253,8 @@ class pHYs(Chunk):
 # frequency - tablica elementów 2-bajtowych zawierających częstotliwości proporcjonalne do frakcji pixeli obrazu dla których ta paleta jest najbardziej zbliżona do przestrzeni RGBA
 #
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
-# __str__ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka sPLT w określony przez nas sposób)
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka sPLT w określony przez nas sposób)
 class sPLT(Chunk):
     def __init__(self, length, chunk_type, data, crc):
         super().__init__(length, chunk_type, data, crc)
@@ -283,5 +283,3 @@ class sPLT(Chunk):
             f+=1
     def __str__(self):
         return "================================================================================\n" + "Palette name: {0}\nSample_depth: {1}\nGreen: {2}\nRed: {3}\nBlue: {4}\nAplha: {5}\nFrequency: {6}\n".format(self.palette_name, self.sample_depth, self.green, self.red, self.blue, self.alpha, self.frequency) + "================================================================================\n"
-
-

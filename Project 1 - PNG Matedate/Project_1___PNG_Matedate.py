@@ -7,8 +7,8 @@ import cv2
 #img_color = cv2.imread("mario.png", cv2.IMREAD_COLOR)
 #cv2.imshow("Image color", img_color)
 
-img = cv2.imread("dice.png", cv2.IMREAD_GRAYSCALE)
-cv2.imshow("Image", img)
+#img = cv2.imread("type_3.png", cv2.IMREAD_GRAYSCALE)
+#cv2.imshow("Image", img)
 
 
 
@@ -53,35 +53,15 @@ while number != j:
     if number >= 1 and number <= j:
         if number == 1:
             print(img.chunk_ihdr)
-        elif number == (j-1):
-            print(img.chunk_iend)
-        elif number == (j-2):
-             img.show_picture_color()
-        elif number == (j-3):
-             img.show_picture_gray()
         elif number == (j-4):
+            print(img.chunk_iend)
+        elif number == (j-1):
              img.show_spectrum()
+        elif number == (j-2):
+             img.show_picture_gray()
+        elif number == (j-3):
+            img.show_picture_color()
         elif number != j:
             print(img.chunks_typical[number-2])
     else:
         print("Błąd: Nie ma takiego chunka! Spróbuj ponownie.")
-    
-        
-
-
-
-
-
-    
-
-#print(img.chunk_splt)
-#print(img.chunk_ihdr)
-#print(img.chunk_plte)
-#print(img.chunk_iend)
-#print(img.chunk_time)
-#print(img.chunk_itxt)
-#print(img.chunk_text)
-#print(img.chunk_chrm)
-#print(img.chunk_srgb)
-#print(img.chunk_phys)
-#print(img.chunk_exif)

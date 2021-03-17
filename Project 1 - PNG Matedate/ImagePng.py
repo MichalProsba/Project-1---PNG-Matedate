@@ -28,7 +28,7 @@ def create_png():
 # chunks_idat - lista zawierająca chunki idat
 # chunks_other - lista zawierająca pozostałe, które nie są obligatoryjne
 #Metody:
-# __init__ - konstruktor parametryczny do którego wysyłamy ścieżkę do pliku
+# _init_ - konstruktor parametryczny do którego wysyłamy ścieżkę do pliku
 # show_picture_color - wyświetla obraz w kolorze
 # show_picture_gray - wyświetla obraz w odcieniach szarości
 # show_spectrum - wyświetla transformate Fouriera obrazu 
@@ -36,12 +36,9 @@ class ImagePng:
     def __init__(self, file):
         self.file_name = file
         self.file = open(self.file_name, "rb")
-        self.img_color = cv2.imread(self.file_name, cv2.IMREAD_COLOR)
-        self.img_gray = cv2.imread(self.file_name, cv2.IMREAD_GRAYSCALE)
         self.chunks_idat=[]
         self.chunks_typical=[]
         self.chunks_others=[]
-
         if self.file.readable():
             if b'\x89PNG\r\n\x1a\n' == self.file.read1(8):
                 self.magic_number = b'\x89PNG\r\n\x1a\n'
@@ -87,12 +84,23 @@ class ImagePng:
                 self.chunks_typical.append(sPLT(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
+        self.file.close();
+
     def show_picture_color(self):
-        cv2.imshow("Image color", self.img_color)
+        img = cv2.imread(self.file_name, cv2.IMREAD_COLOR)
+        cv2.imshow("Image color", img)
+        self.file.close()
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
     def show_picture_gray(self):
-        cv2.imshow("Image gray", self.img_gray)
+        img = cv2.imread(self.file_name, cv2.IMREAD_GRAYSCALE)
+        cv2.imshow("Image gray", img)
+        self.file.close()
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
     def show_spectrum(self):
-        f = np.fft.fft2(self.img_gray)
+        img = cv2.imread(self.file_name, cv2.IMREAD_GRAYSCALE)
+        f = np.fft.fft2(img)
         fshift = np.fft.fftshift(f)
         magnitude_spectrum = 20*np.log(np.sqrt(np.real(fshift[::]) ** 2 + np.imag(fshift[::]) ** 2))
         phase_spectrum = np.arctan(np.imag(fshift[::])/np.real(fshift[::]))
@@ -100,7 +108,7 @@ class ImagePng:
         phase_spectrum = np.asarray(phase_spectrum, dtype=np.uint8)
         cv2.imshow("Image Furrier Magnitude", magnitude_spectrum)
         cv2.imshow("Image Furrier Angle", phase_spectrum)
-        cv2.imshow("Image", self.img_gray)
+        cv2.imshow("Image", img)
+        self.file.close()
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-    
