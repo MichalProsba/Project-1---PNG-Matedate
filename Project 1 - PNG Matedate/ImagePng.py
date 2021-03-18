@@ -12,12 +12,7 @@ CHUNK_TYPE = 4
 #Ilość bitów przeznaczona na informacje o sumie kontrolnej w chunku
 CHUNK_CRC = 4
 
-#Funkcja create_png - pozwala na tworzenie testowego pliku zawierającego chunk sPLT
-def create_png():
-        tmp2 = open('tmp2.png', 'wb')
-        data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x08\x90\x00\x00\x0bh\x08\x06\x00\x00\x00\xa6C\xccs\x00\x00\x00\rsPLTha\x00\x08\x30\x10\x20\x02\x06\x00\x06\x00\x00\x00\x00\x00IEND\xaeB`\x82'
-        tmp2.write(data)
-        tmp2.close()
+
 
 
 #Klasa ImagePng
@@ -40,12 +35,13 @@ class ImagePng:
         self.chunks_idat=[]
         self.chunks_typical=[]
         self.chunks_others=[]
+        self.plte = -1
         if self.file.readable():
-            if b'\x89PNG\r\n\x1a\n' == self.file.read1(8):
+            if b'\x89PNG\r\n\x1a\n' == self.file.read(8):
                 self.magic_number = b'\x89PNG\r\n\x1a\n'
             else:
                 print("Niepoprawnie wczytano magiczny numer")
-        chunk_type = "noname"
+        chunk_type = "name"
         j=0
         while chunk_type != "IEND":
             chunk_length_byte = self.file.read(CHUNK_LENGTH)
@@ -56,32 +52,25 @@ class ImagePng:
             if chunk_type == "IHDR":
                 self.chunk_ihdr = IHDR(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
             elif chunk_type == "PLTE":
-                #self.chunk_plte = PLTE(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
                 self.chunks_typical.append(PLTE(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
+                self.plte = len(self.chunks_typical)
             elif chunk_type == "IDAT":
                 self.chunks_idat.append(IDAT(chunk_length_byte, chunk_type, chunk_data, chunk_crc))
             elif chunk_type == "IEND":
                 self.chunk_iend = IEND(chunk_length_byte, chunk_type, chunk_data, chunk_crc)    
             elif chunk_type == "tIME":
-                #self.chunk_time = tIME(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
                 self.chunks_typical.append(tIME(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
             elif chunk_type == "iTXt":
-                #self.chunk_itxt = iTXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
                 self.chunks_typical.append(iTXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc))
             elif chunk_type == "tEXt":
-                #self.chunk_text = tEXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
                 self.chunks_typical.append(tEXt(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
             elif chunk_type == "cHRM":
-                #self.chunk_chrm = cHRM(chunk_length_byte, chunk_type, chunk_data, chunk_crc) 
                 self.chunks_typical.append(cHRM(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
             elif chunk_type == "sRGB":
-                #self.chunk_srgb = sRGB(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
                 self.chunks_typical.append(sRGB(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
             elif chunk_type == "pHYs":
-                #self.chunk_phys = pHYs(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
                 self.chunks_typical.append(pHYs(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
             elif chunk_type == "sPLT":
-                #self.chunk_splt = sPLT(chunk_length_byte, chunk_type, chunk_data, chunk_crc)
                 self.chunks_typical.append(sPLT(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
@@ -113,3 +102,26 @@ class ImagePng:
         self.file.close()
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+    def save_only_critical(self):
+        critical_file = open("critical.png", 'wb')
+        data = self.magic_number
+        data += self.chunk_ihdr.length
+        data += self.chunk_ihdr.chunk_type.encode('utf-8')
+        data += self.chunk_ihdr.data
+        data += self.chunk_ihdr.crc
+        if self.plte != -1:
+            data += self.chunks_typical[self.plte-1].length
+            data += self.chunks_typical[self.plte-1].chunk_type.encode('utf-8')
+            data += self.chunks_typical[self.plte-1].data
+            data += self.chunks_typical[self.plte-1].crc
+        for i in range(len(self.chunks_idat)):
+            data += self.chunks_idat[i].length
+            data += self.chunks_idat[i].chunk_type.encode('utf-8')
+            data += self.chunks_idat[i].data
+            data += self.chunks_idat[i].crc
+        data += self.chunk_iend.length
+        data += self.chunk_iend.chunk_type.encode('utf-8')
+        data += self.chunk_iend.data
+        data += self.chunk_iend.crc
+        critical_file.write(data)
+        critical_file.close()

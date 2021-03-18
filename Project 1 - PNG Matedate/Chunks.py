@@ -26,8 +26,7 @@ class Chunk:
         self.data = data
         self.crc = crc
     def __str__(self):
-        info = "Chunk length: {0}\nChunk type: {1}\nChunk data: {2}\nChunk crc: {3}\n".format(self.length, self.chunk_type, self.data, self.crc)
-        return info             
+        return "Chunk length: {0}\nChunk type: {1}\nChunk data: {2}\nChunk crc: {3}\n".format(self.length, self.chunk_type, self.data, self.crc) 
 
 #Klasa IHDR - Chunk IHDR jest chunkiem obowiązkowym i musi pojawić się jako pierwszy i zawiera podstawowe informacje o obrazie
 #Atrybuty:
