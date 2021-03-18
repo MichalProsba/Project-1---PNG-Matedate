@@ -1,6 +1,9 @@
 from lxml import etree
 import io
 import re
+from PIL import Image
+import numpy as np
+import math
 
 #Funkcja convert_byte - pozwala na konwertowania ciągu bitów na liczbę dziesiętną
 # data - lista zawierajaca ciag bitow danych
@@ -80,6 +83,20 @@ class PLTE(Chunk):
                 plte_info += "\n"
             plte_info += str(self.colors[i])
             i+=1
+        size = math.ceil(math.sqrt(int(convert_byte(self.length, 0, 3)/3)))
+        size_visible = 50
+        data = np.zeros((size_visible*size, size_visible*size, 3), dtype=np.uint8)
+        x=0
+        y=0
+        for i in range(int(convert_byte(self.length, 0, 3)/3)):
+            if x == size:
+                x=0
+                y+=1
+            data[y*size_visible:y*size_visible+size_visible, x*size_visible:x*size_visible+size_visible] = self.colors[i] # red patch in upper left
+            x+=1
+        img = Image.fromarray(data, 'RGB')
+        img.save('PLTE.png')
+        img.show()
         return "================================================================================\n" + super().__str__() + str(plte_info) + "\n================================================================================\n"
 
 #Klasa IDAT - Chunk IDAT jest chunkiem obowiązkowym i zawiera obraz

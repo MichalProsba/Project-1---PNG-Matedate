@@ -10,23 +10,7 @@ def create_png():
         tmp2.close()
 
 
-
-#Funkcja cls - pozwala na wyczyszczenie interpretera na każdym systemie operacyjnym
-#def cls():
-#    os.system('cls' if os.name=='nt' else 'clear')
-
-#img_color = cv2.imread("mario.png", cv2.IMREAD_COLOR)
-#cv2.imshow("Image color", img_color)
-
-#img = cv2.imread("type_3.png", cv2.IMREAD_GRAYSCALE)
-#cv2.imshow("Image", img)
-
-
-
 #create_png();
-
-
-
 
 line = "================================================================================"
 j = 1
@@ -39,6 +23,7 @@ print(line)
 print(str(j) + ". IHDR")
 j += 1
 print(line)
+#print(img.chunks_idat[0])
     
 for i in img.chunks_typical:
     print(str(j) + ". " + str(i.chunk_type))    
