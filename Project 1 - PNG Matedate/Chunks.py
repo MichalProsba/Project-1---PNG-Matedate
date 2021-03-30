@@ -279,23 +279,28 @@ class sPLT(Chunk):
         self.palette_name = all_data[:index].decode('utf-8')
         all_data = all_data[index+1:]
         self.sample_depth = convert_byte(all_data, 0, 0)
-        if self.sample_depth == 16:
-            self.green = convert_byte(all_data, 1, 2)
-            self.red = convert_byte(all_data, 3, 4)
-            self.blue = convert_byte(all_data, 5, 6)
-            self.alpha = convert_byte(all_data, 7, 8)
-            index = 9
-        else:
-            self.green = convert_byte(all_data, 1, 1)
-            self.red = convert_byte(all_data, 2, 2)
-            self.blue = convert_byte(all_data, 3, 3)
-            self.alpha = convert_byte(all_data, 4, 4)
-            index = 5
-        all_data = all_data[index:]
+        self.green = []
+        self.red = []
+        self.blue = []
+        self.alpha = []
         self.frequency = []
-        f = 0
-        while f < len(all_data)/2:
-            self.frequency.append(convert_byte(all_data, 2*f, 2*f+1))
-            f+=1
+        f=0
+        if self.sample_depth == 16:
+            while f < len(all_data)/10:
+                self.green.append(convert_byte(all_data, 10*f+1, 10*f+2))
+                self.red.append(convert_byte(all_data, 10*f+3, 10*f+4))
+                self.blue.append(convert_byte(all_data, 10*f+5, 10*f+6))
+                self.alpha.append(convert_byte(all_data, 10*f+7, 10*f+8)) 
+                self.frequency.append(convert_byte(all_data, 10*f+9, 10*f+10))
+                f+=1
+        else:
+            while f < len(all_data)/6:
+                self.green.append(convert_byte(all_data, 6*f+1, 6*f+1))
+                self.red.append(convert_byte(all_data, 6*f+2, 6*f+2))
+                self.blue.append(convert_byte(all_data, 6*f+3, 6*f+3))
+                self.alpha.append(convert_byte(all_data, 6*f+4, 6*f+4))
+                self.frequency.append(convert_byte(all_data, 6*f+5, 6*f+6))
+                index = 5
+                f+=1
     def __str__(self):
         return "================================================================================\n" + "Palette name: {0}\nSample_depth: {1}\nGreen: {2}\nRed: {3}\nBlue: {4}\nAplha: {5}\nFrequency: {6}\n".format(self.palette_name, self.sample_depth, self.green, self.red, self.blue, self.alpha, self.frequency) + "================================================================================\n"
