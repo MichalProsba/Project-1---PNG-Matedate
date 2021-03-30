@@ -39,7 +39,7 @@ class Chunk:
 # color_type - 1 bajt zawierający informacje o typie koloru
 # compression_method - 1 bajt zawierający informacje o metodzie kompresji
 # filter_method - 1 bajt zawierający informacje o metodzie filtrowania
-# interlace_method - 1 bajt zawierający informacje oo metodzie z przeplotem
+# interlace_method - 1 bajt zawierający informacje o metodzie z przeplotem
 #Metody:
 # _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
 # _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość chunka IHDR w określony przez nas sposób)
