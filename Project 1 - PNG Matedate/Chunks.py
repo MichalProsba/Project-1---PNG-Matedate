@@ -262,10 +262,10 @@ class pHYs(Chunk):
 #Atrybuty:
 # palette_name - 1-79 bajtów określających nazwę palety
 # sample_depth - 1 bajt określający głębię bitową (zawsze 8 lub 16)
-# red - 1-2 bajty (w zależności od sample_depth) określające kolor czerwony
-# green - 1-2 bajty (w zależności od sample_depth) określające kolor zielony
-# green - 1-2 bajty (w zależności od sample_depth) określające kolor niebieski
-# alpha - 1-2 bajty (w zależności od sample_depth) określające przeźroczystość
+# red - tablica elementów 1-2-bajtowych (w zależności od sample_depth) określające kolor czerwony
+# green - tablica elementów 1-2-bajtowych (w zależności od sample_depth) określające kolor zielony
+# blue - tablica elementów 1-2-bajtowych (w zależności od sample_depth) określające kolor niebieski
+# alpha - tablica elementów 1-2-bajtowych (w zależności od sample_depth) określające przeźroczystość
 # frequency - tablica elementów 2-bajtowych zawierających częstotliwości proporcjonalne do frakcji pixeli obrazu dla których ta paleta jest najbardziej zbliżona do przestrzeni RGBA
 #
 #Metody:
