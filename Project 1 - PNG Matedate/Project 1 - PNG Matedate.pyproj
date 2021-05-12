@@ -27,6 +27,9 @@
     <Compile Include="ImagePng.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ParametersGeneratorRSA.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Project_1___PNG_Matedate.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
