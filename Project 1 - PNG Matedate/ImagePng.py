@@ -1,5 +1,6 @@
 from Chunks import Chunk, IHDR, PLTE, IDAT, IEND, tIME, iTXt, tEXt, cHRM, sRGB, pHYs, sPLT
 import cv2
+import zlib
 import numpy as np
 from PIL import Image, PngImagePlugin
 import PIL.Image
@@ -11,9 +12,6 @@ CHUNK_LENGTH = 4
 CHUNK_TYPE = 4
 #Ilość bitów przeznaczona na informacje o sumie kontrolnej w chunku
 CHUNK_CRC = 4
-
-
-
 
 #Klasa ImagePng
 #Atrybuty:
@@ -36,6 +34,9 @@ class ImagePng:
         self.chunks_typical=[]
         self.chunks_others=[]
         self.plte = -1
+        self.bytesPerPixel = 0
+        self.reconstructed_idat_data=[]
+        self.after_iend_data = bytes()
         if self.file.readable():
             if b'\x89PNG\r\n\x1a\n' == self.file.read(8):
                 self.magic_number = b'\x89PNG\r\n\x1a\n'
@@ -74,6 +75,13 @@ class ImagePng:
                 self.chunks_typical.append(sPLT(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
             else:
                 self.chunks_others.append(Chunk(chunk_length_byte, chunk_type, chunk_data, chunk_crc)) 
+
+        #Wczytanie nadmiarowych danych, znajdujących się za chunkiem IEND
+        while True:
+            bytes_read = self.file.read(2)
+            if not bytes_read:
+                break
+            self.after_iend_data += bytes_read
         self.file.close();
 
     def show_picture_color(self):
@@ -125,3 +133,83 @@ class ImagePng:
         data += self.chunk_iend.crc
         critical_file.write(data)
         critical_file.close()
+
+    def getDecompressedIdat(self):
+        IDAT_data = b''.join(chunk.data for chunk in self.chunks_idat)
+        return zlib.decompress(IDAT_data)
+
+
+    def process_idat_data(self):
+        """Decompress and defilter IDAT data
+
+        This method is taken from this tutorial:
+        https://pyokagan.name/blog/2019-10-14-png/
+        Solid explanation is also available there.
+        """
+    
+        # Określa ile bytów przypada na jeden pixel w zależności od typu koloru
+        colorTypeToBytesPerPixel = {
+            0: 1,
+            2: 3,
+            3: 1,
+            4: 2,
+            6: 4
+        }
+
+        # Dekompresowanie danych
+        IDAT_data = self.getDecompressedIdat()
+
+        # Wyznaczenie ile bytów przypada na jeden pixel
+        self.bytesPerPixel = colorTypeToBytesPerPixel.get(self.chunk_ihdr.color_type)
+
+        # Wyznaczenie spodziewanej długości chunków IDAT
+        width = self.chunk_ihdr.width
+        height = self.chunk_ihdr.height
+        expected_IDAT_data_len = height * (1 + width * self.bytesPerPixel)
+
+        assert expected_IDAT_data_len == len(IDAT_data), "Nie poprawna ilość danych po dekompresji."
+        stride = width * self.bytesPerPixel
+
+        def paeth_predictor(a, b, c):
+            p = a + b - c
+            pa = abs(p - a)
+            pb = abs(p - b)
+            pc = abs(p - c)
+            if pa <= pb and pa <= pc:
+                Pr = a
+            elif pb <= pc:
+                Pr = b
+            else:
+                Pr = c
+            return Pr
+
+        def recon_a(r, c):
+            return self.reconstructed_idat_data[r * stride + c - self.bytesPerPixel] if c >= self.bytesPerPixel else 0
+
+        def recon_b(r, c):
+            return self.reconstructed_idat_data[(r-1) * stride + c] if r > 0 else 0
+
+        def recon_c(r, c):
+            return self.reconstructed_idat_data[(r-1) * stride + c - self.bytesPerPixel] if r > 0 and c >= self.bytesPerPixel else 0
+
+        # Defiltrowanie 
+        i = 0
+        for r in range(height): # dla kazdej linii skanowania
+            filter_type = IDAT_data[i] # pierwszy bajt w linii skanowania
+            i += 1
+            for c in range(stride): # dla kazdego bajtu w lini skanowania
+                filt_x = IDAT_data[i]
+                i += 1
+                if filter_type == 0: # Brak
+                    recon_x = filt_x
+                elif filter_type == 1: # typ_1 filtru
+                    recon_x = filt_x + recon_a(r, c)
+                elif filter_type == 2: # typ_2 filtru
+                    recon_x = filt_x + recon_b(r, c)
+                elif filter_type == 3: # typ_3 filtru
+                    recon_x = filt_x + (recon_a(r, c) + recon_b(r, c)) // 2
+                elif filter_type == 4: # typ_4 filtru
+                    recon_x = filt_x + paeth_predictor(recon_a(r, c), recon_b(r, c), recon_c(r, c))
+                else:
+                    raise Exception('unknown filter type: ' + str(filter_type))
+                self.reconstructed_idat_data.append(recon_x & 0xff) # usunięcie bajtu

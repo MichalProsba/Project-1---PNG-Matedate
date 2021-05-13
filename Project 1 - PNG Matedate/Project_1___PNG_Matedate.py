@@ -1,13 +1,20 @@
 from ImagePng import ImagePng
 from ParametersGeneratorRSA import ParametersGeneratorRSA
-#import ImagePng
+from RSA import RSA
 import cv2
 
-parametrGenerator = ParametersGeneratorRSA(10)
-print(parametrGenerator)
+file_name = input("Podaj nazwę pliku:")
+img = ImagePng(file_name)
+img.process_idat_data()
+rsaTest = RSA(1024)
+rsaTest.rsa(img, "encrypted.png", "decrypted.png", "CRYPTO")
+img.show_picture_color()
 
+eimg = ImagePng("encrypted.png")
+eimg.show_picture_color()
 
-
+dimg = ImagePng("decrypted.png")
+dimg.show_picture_color()
 
 
 

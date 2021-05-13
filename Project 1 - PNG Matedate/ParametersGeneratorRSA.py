@@ -44,17 +44,17 @@ class ParametersGeneratorRSA:
         if self.e.bit_length() == self.keySize and self.d.bit_length() == self.keySize:
            return (copy.deepcopy(self.publicKey), copy.deepcopy(self.privateKey))
  
-    def greatestCommonDivisor(self, a, b): 
-        if b==0: 
-            return a 
+    def greatestCommonDivisor(self, t, s): 
+        if s==0: 
+            return t 
         else: 
-            return self.greatestCommonDivisor(b,a%b) 
+            return self.greatestCommonDivisor(s,t%s) 
         
-    def extendedEuclideanAlgorithm(self, a, b):
-        if a == 0:
-            return (b, 0, 1)
-        g, y, x = self.extendedEuclideanAlgorithm(b%a,a)
-        return (g, x - (b//a) * y, y)
+    def extendedEuclideanAlgorithm(self, t, s):
+        if t == 0:
+            return (s, 0, 1)
+        g, y, x = self.extendedEuclideanAlgorithm(s%t,t)
+        return (g, x - (s//t) * y, y)
 
     def modularMultiplicativeInverse(self, a, m):
         g, x, y = self.extendedEuclideanAlgorithm(a, m)
