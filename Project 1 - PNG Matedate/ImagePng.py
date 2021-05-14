@@ -134,18 +134,14 @@ class ImagePng:
         critical_file.write(data)
         critical_file.close()
 
+
     def getDecompressedIdat(self):
         IDAT_data = b''.join(chunk.data for chunk in self.chunks_idat)
         return zlib.decompress(IDAT_data)
 
-
+    # Funkcja wykonująca dekompresję i defiltrację danych pliku PNG
     def process_idat_data(self):
-        """Decompress and defilter IDAT data
-
-        This method is taken from this tutorial:
-        https://pyokagan.name/blog/2019-10-14-png/
-        Solid explanation is also available there.
-        """
+        # https://pyokagan.name/blog/2019-10-14-png/
     
         # Określa ile bytów przypada na jeden pixel w zależności od typu koloru
         colorTypeToBytesPerPixel = {
@@ -170,6 +166,7 @@ class ImagePng:
         assert expected_IDAT_data_len == len(IDAT_data), "Nie poprawna ilość danych po dekompresji."
         stride = width * self.bytesPerPixel
 
+        # Funkcja wykorzystana do defiltracji typu 4
         def paeth_predictor(a, b, c):
             p = a + b - c
             pa = abs(p - a)
@@ -183,12 +180,15 @@ class ImagePng:
                 Pr = c
             return Pr
 
+        # Funkcja wykorzystana do defiltracji do typów: 1,3,4
         def recon_a(r, c):
             return self.reconstructed_idat_data[r * stride + c - self.bytesPerPixel] if c >= self.bytesPerPixel else 0
 
+        # Funkcja wykorzystana do defiltracji do typów: 2,3,4
         def recon_b(r, c):
             return self.reconstructed_idat_data[(r-1) * stride + c] if r > 0 else 0
 
+        # Funkcja wykorzystana do defiltracji typu 4
         def recon_c(r, c):
             return self.reconstructed_idat_data[(r-1) * stride + c - self.bytesPerPixel] if r > 0 and c >= self.bytesPerPixel else 0
 

@@ -2,6 +2,28 @@ import random, sys, os
 import sympy
 import copy
 
+#Klasa ParametersGeneratorRSA
+#Atrybuty:
+# keySize - rozmiar klucza w bitach
+# primeNumberSize - rozmiar liczby pierwszej
+# p - pierwsza liczba pierwsza
+# q - druga liczba 
+# o - iloczyn (p-1)(q-1)
+# n - iloczyn pq (część klucza publicznego i prywatnego)
+# e - liczba wzglednie pierwsza do liczby o (część klucza publicznego)
+# d - liczba obliczona jako e^(-1)(mod(o)) (część klucza prywatnego)
+# publicKey - klucz publiczny
+# privateKey - klucz prywatny
+
+#Metody:
+# _init_ - konstruktor parametryczny do którego wysyłamy dane do powyższych atrybutów
+# _str_ - przeciążenie wyświetlania (pozwala wyświetlić zawartość obiektu typu ParametersGeneratorRSA w określony przez nas sposób)
+# generateLargePrimeNumber - generuje dużą liczbę pierwszą
+# generateAll - generuje klucze potrezbne do szyfrowania algorytmem RSA
+# greatestCommonDivisor - generuje największy wspólny dzielnik dwóch podanych liczb
+# extendedEuclideanAlgorithm - generuje największy wspólny dzielnik dwóch podanych liczb oraz dwie liczby spełniające tożsamość Bézouta
+# modularMultiplicativeInverse - funkcja obliczająca odwrotność modulo dla podanej pary liczb
+
 class ParametersGeneratorRSA:
     def __init__(self, keySize):
         self.keySize=keySize
