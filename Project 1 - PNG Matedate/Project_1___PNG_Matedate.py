@@ -97,4 +97,4 @@ while True:
     elif option == 3:
         exit()
     else:
-        print("Nie ma takiej opcji. Spróbuj ponownie.")
+        print("Nie ma takiej opcji. Spróbuj ponownie!")
